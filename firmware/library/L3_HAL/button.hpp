@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstdint>
 
 #include "L1_Drivers/gpio.hpp"
@@ -7,10 +6,9 @@
 class ButtonInterface
 {
  public:
-    virtual void Initialize()                                         = 0;
-    virtual bool Read()                                               = 0;
+    virtual void Initialize(void)                                     = 0;
     virtual bool Released(bool reset_state = false)                   = 0;
-    virtual bool Pressed()                                            = 0;
+    virtual bool Pressed(bool reset_state = false)                    = 0;
     virtual void InvertButtonSignal(bool enable_invert_signal = true) = 0;
 };
 
@@ -26,18 +24,10 @@ class Button : public ButtonInterface, public Gpio
     {
     }
 
-    // Unit test constructor
-    constexpr Button() : Gpio(kPortFive, kPortFour) {}
-
-    void Initialize() override
+    void Initialize(void) override
     {
         SetMode(PinInterface::Mode::kPullDown);
         SetAsInput();
-    }
-
-    bool Read() override
-    {
-        return (ReadPin()) ? true : false;
     }
 
     bool Released(bool reset_state = false) override
@@ -47,11 +37,11 @@ class Button : public ButtonInterface, public Gpio
         {
             was_pressed = false;
         }
-        if (ReadPin() && !was_pressed)
+        if (Read() && !was_pressed)
         {
             was_pressed = true;
         }
-        else if (!ReadPin() && was_pressed)
+        else if (!Read() && was_pressed)
         {
             result      = true;
             was_pressed = false;
@@ -66,12 +56,12 @@ class Button : public ButtonInterface, public Gpio
         {
             was_pressed = false;
         }
-        if (ReadPin() && !was_pressed)
+        if (Read() && !was_pressed)
         {
             result      = true;
             was_pressed = true;
         }
-        else if (!ReadPin() && was_pressed)
+        else if (!Read() && was_pressed)
         {
             was_pressed = false;
         }
@@ -83,8 +73,8 @@ class Button : public ButtonInterface, public Gpio
         SetAsActiveLow(enable_invert_signal);
     }
 
-    ~ButtonDriver() {}
+    ~Button() {}
 
  private:
-    static bool was_pressed = false;
+    static bool was_pressed;
 };

@@ -23,10 +23,10 @@ class GpioInterface
      virtual void SetDirection(PinDirection direction) = 0;
      virtual void SetHigh(void)                        = 0;
      virtual void SetLow(void)                         = 0;
-     virtual void Set(PinState output = kHigh)        = 0;
+     virtual void Set(PinState output = kHigh)         = 0;
      virtual void Toggle()                             = 0;
-     virtual PinState ReadPin(void)                   = 0;
-     virtual bool ReadPinBool(void)                    = 0;
+     virtual PinState ReadPin(void)                    = 0;
+     virtual bool Read(void)                           = 0;
 };
 
 class Gpio : public GpioInterface, public Pin
@@ -88,7 +88,7 @@ class Gpio : public GpioInterface, public Pin
         return static_cast<PinState>((gpio_base[kPort]->PIN >> kPin) & 1);
     }
     // Returns true if input or output pin is high
-    bool ReadPinBool(void) override
+    bool Read(void) override
     {
         return static_cast<bool>((gpio_base[kPort]->PIN >> kPin) & 1);
     }
